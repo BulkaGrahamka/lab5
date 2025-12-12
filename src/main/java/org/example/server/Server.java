@@ -28,10 +28,21 @@ public class Server {
                     gracz1=clientSocket;
                     System.out.println("gracz 1 (czarny) połączony :)");
 
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    out.println("POŁĄCZONO");
+
                 } else if(gracz2 == null){
                     gracz2 = clientSocket;
                     System.out.println("gracz 2 (biały) połączony :)");
                     System.out.println("dwóch graczy połączonych - zaczynamy gre! powodzenia!!");
+
+                    ClientHandler handler1 = new ClientHandler(gracz1);
+                    ClientHandler handler2 = new ClientHandler(gracz2);
+                    new Thread(handler1).start();
+                    new Thread(handler2).start();
+
+                    handler1.wyslij("START CZARNY");
+                    handler2.wyslij("START BIALY");
                     break;
                 }else{
                     System.out.println("niestety ten serwer jeest pełny :( odrzucam połączenie...");
@@ -41,10 +52,15 @@ public class Server {
                 }
 
             }
-            
+            System.out.println("Serwer działa dalej...");
+
+            while (true) {
+                Thread.sleep(1000);
+            }
+
             
         }
-        catch (IOException e){
+        catch (IOException | InterruptedException e){
                 System.out.println("błąd serwera: " + e.getMessage());
             }
         }
