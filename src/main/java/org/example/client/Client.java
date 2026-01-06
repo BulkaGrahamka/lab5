@@ -20,7 +20,7 @@ public class Client{
             socket=new Socket(host, port);
             System.out.println("połączono z serwerem :)");
             BufferedReader in = new BufferedReader(
-                new InputStreamReader(socket.getInputStream())
+                    new InputStreamReader(socket.getInputStream())
             );
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             Thread odbior = new Thread(() -> {
@@ -36,41 +36,45 @@ public class Client{
                             System.out.println("Serwer jest pelny :( Rozłączono");
                             socket.close();
                             break;
+                        } else if(msg.equals("PLANSZA")){
+                            for (int i = 0; i < 20; i++) {
+                                String liniaplanszy = in.readLine();
+                                System.out.println(liniaplanszy);
+                            }
+
+                            System.out.println();
                         }
-                        else{
-                            System.out.println("Serwer: " + msg);
-                        }        
+
                     }
                 }catch (IOException e){
                     System.out.println("rozłączono z serwerem");
-  
+
                 }
             });
             odbior.start();
-            
+
             BufferedReader console = new BufferedReader(
-                new InputStreamReader(System.in)
-                );
+                    new InputStreamReader(System.in)
+            );
 
             String linia;
             while ((linia = console.readLine()) != null) {
                 if (mojatura) {
                     out.println(linia);
-                    mojatura = false; 
+                    mojatura = false;
                 } else {
-                System.out.println("czekaj na swoją kolej...");
+                    System.out.println("czekaj na swoją kolej...");
                 }
-            
+
             }
 
         } catch (IOException e){
             System.out.println("błąd połączenia: " + e.getMessage());
         }
-            
+
     }
 }
 
-            
 
-        
-    
+
+

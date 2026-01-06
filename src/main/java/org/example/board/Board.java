@@ -1,15 +1,10 @@
-package org.example.common;
+package org.example.board;
 
 import java.util.*;
 
-/**
- * Klasa Board odpowiada WYŁĄCZNIE za stan planszy i reguły Go.
- * Serwer korzysta z niej jako jedynego źródła prawdy.
- */
 public class Board {
     private final int size;
     private final int[][] grid;
-    private int currentPlayer = 1;
     private final int[][] dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
 
     public Board(int size) {
@@ -21,7 +16,6 @@ public class Board {
     }
 
     public synchronized int playMove(int row, int col, int player) {
-        if (player != currentPlayer) return -1;
         if (!inBounds(row, col) || grid[row][col] != 0) return -1;
 
         int enemy = (player == 1) ? 2 : 1;
@@ -47,7 +41,6 @@ public class Board {
             }
         }
 
-        currentPlayer = enemy;
         return captured;
     }
 
@@ -120,24 +113,23 @@ public class Board {
         return row >= 0 && col >= 0 && row < size && col < size;
     }
 
-    /**
-     * ASCII plansza – gotowa do wysłania do klienta
-     */
-    public synchronized String toString() {
-        StringBuilder sb = new StringBuilder();
+    public synchronized List<String> getBoardLines() {
+        List<String> lines = new ArrayList<>();
+        StringBuilder line0 = new StringBuilder("  ");
         for (int col = 0; col < size; col++) {
-            sb.append(String.format("%2d", col));
+            line0.append(String.format("%2d", col));
         }
+        lines.add(line0.toString());
         for (int row = 0; row < size; row++) {
-            sb.append(String.format("%2d", row));
+            StringBuilder line = new StringBuilder(String.format("%2d", row));
             for (int col = 0; col < size; col++) {
                 char ch = '.';
                 if (grid[row][col] == 1) ch = 'C';
                 if (grid[row][col] == 2) ch = 'B';
-                sb.append(" ").append(ch);
+                line.append(" ").append(ch);
             }
-            sb.append('\n');
+            lines.add(line.toString());
         }
-        return sb.toString();
+        return lines;
     }
 }
